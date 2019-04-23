@@ -1,28 +1,51 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "bulma";
+import "./App.css";
+import ListView from "./ListView";
+import DetailView from "./DetailView";
 
-class App extends Component {
+export default class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <section className="hero is-dark">
+          <div className="hero-body">
+            <div className="container">
+              <h1 className="title">Chinook CRUD app</h1>
+              <h2 className="subtitle">
+                Powered by Django REST framework and React.js
+              </h2>
+            </div>
+          </div>
+        </section>
+
+        <div className="container">
+          <div className="columns">
+            <div className="column">
+              <ListView />
+            </div>
+            <div className="column">
+              <DetailView />
+            </div>
+          </div>
+        </div>
+
+        <footer className="footer">
+          <div className="content has-text-centered">
+            <p>
+              By <a href="mailto: zvonimir.lepur@gmail.com">Zvonimir Lepur</a>.
+            </p>
+            <p>
+              The source code is licensed under
+              <a href="http://opensource.org/licenses/mit-license.php">
+                {" "}
+                MIT
+              </a>{" "}
+              license.
+            </p>
+          </div>
+        </footer>
       </div>
     );
   }
 }
-
-export default App;
