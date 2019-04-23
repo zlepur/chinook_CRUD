@@ -3,6 +3,17 @@ from .models import (Artists, Employees, Customers, Invoices, MediaTypes, Genres
                      Playlists, PlaylistTrack, Albums, InvoiceItems)
 
 
+class RelatedFieldsNameURLMixin():
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        for field, lookup_field in self.URL_CONFIG.items():
+            obj = getattr(instance, field)
+            name = getattr(obj, lookup_field)
+            ret[field] = [name, ret[field]]
+        ret['list_url'] = self.LIST_URL
+        return ret
+
+
 class ArtistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artists
@@ -57,10 +68,15 @@ class PlaylistTrackSerializer(serializers.ModelSerializer):
         fields = ('playlistid', 'trackid')
 
 
-class AlbumsSerializer(serializers.ModelSerializer):
+class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSerializer):
+    URL_CONFIG = {'artistid': 'name'}
+    LIST_URL = 'albums'
+
+    artistid = serializers.HyperlinkedRelatedField('artists-detail', read_only=True)
+
     class Meta:
         model = Albums
-        exclude = ('albumid',)
+        fields = ('title', 'artistid')
 
 
 class InvoiceItemsSerializer(serializers.ModelSerializer):
