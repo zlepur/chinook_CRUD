@@ -1,62 +1,78 @@
 import React, { Component } from "react";
 import "bulma";
 import "axios";
-import "./App.css";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import ListView from "./ListView";
 import DetailView from "./DetailView";
+import ModelsView from "./ModelsView";
+import Axios from "axios";
 
 export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: null
+            models: null
         };
     }
 
     async componentDidMount() {
-        this.fetchData();
+        await this.fetchModels();
     }
 
-    async fetchData() {}
+    async fetchModels() {
+        let response;
+        try {
+            response = await Axios.get("http://localhost:8000/");
+        } catch (err) {
+            console.error(err);
+        }
+        this.setState({ models: response.data });
+    }
 
     render() {
         return (
-            <div className="App">
-                <section className="hero is-dark">
-                    <div className="hero-body">
-                        <div className="container">
-                            <h1 className="title">Chinook CRUD app</h1>
-                            <h2 className="subtitle">
-                                Powered by Django REST framework and React.js
-                            </h2>
+            <Router>
+                <div className="App">
+                    <section className="hero is-dark">
+                        <div className="hero-body">
+                            <div className="container">
+                                <h1 className="title">Chinook CRUD app</h1>
+                                <h2 className="subtitle">
+                                    Powered by Django REST framework and React.js
+                                </h2>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <div className="container">
-                    <div className="columns">
-                        <div className="column">
-                            <ListView />
-                        </div>
-                        <div className="column">
-                            <DetailView />
+                    <div className="container">
+                        <div className="columns">
+                            <div className="column is-one-fifth">
+                                <ModelsView models={this.state.models} />
+                            </div>
+                            <div className="column is-four-fifths">
+                                <Route exact path={"/:list"} component={ListView} />
+                                <Route path={`/:list/:pk`} component={DetailView} />
+                            </div>
                         </div>
                     </div>
+
+                    <footer className="footer">
+                        <div className="content has-text-centered">
+                            <p>
+                                By <a href="mailto: zvonimir.lepur@gmail.com">Zvonimir Lepur</a>.
+                            </p>
+                            <p>
+                                The source code is licensed under
+                                <a href="http://opensource.org/licenses/mit-license.php">
+                                    {" "}
+                                    MIT
+                                </a>{" "}
+                                license.
+                            </p>
+                        </div>
+                    </footer>
                 </div>
-
-                <footer className="footer">
-                    <div className="content has-text-centered">
-                        <p>
-                            By <a href="mailto: zvonimir.lepur@gmail.com">Zvonimir Lepur</a>.
-                        </p>
-                        <p>
-                            The source code is licensed under
-                            <a href="http://opensource.org/licenses/mit-license.php"> MIT</a>{" "}
-                            license.
-                        </p>
-                    </div>
-                </footer>
-            </div>
+            </Router>
         );
     }
 }
