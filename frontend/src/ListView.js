@@ -41,10 +41,10 @@ export default class ListView extends Component {
 
     buildTableBody() {
         let rows = [];
-        for (let [num, row] of this.state.list.entries()) {
+        for (let row of this.state.list) {
             let data = [];
             for (let val in row) {
-                if (val === "list_url") continue;
+                if (val === "pk") continue;
                 if (isArray(row[val])) {
                     let url = new URL(row[val][1]);
                     data.push(
@@ -56,8 +56,7 @@ export default class ListView extends Component {
                     data.push(<td key={val}>{row[val]}</td>);
                 }
             }
-            // XXX use PK from DB for key attr!
-            rows.push(<tr key={num}>{data}</tr>);
+            rows.push(<tr key={row.pk}>{data}</tr>);
         }
         return rows;
     }
@@ -65,7 +64,7 @@ export default class ListView extends Component {
     buildTableColumns() {
         let column_names = [];
         for (let name in this.state.list[0]) {
-            if (name === "list_url") continue;
+            if (name === "pk") continue;
             column_names.push(<th key={name}>{name}</th>);
         }
         return column_names;

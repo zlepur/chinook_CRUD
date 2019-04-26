@@ -10,14 +10,13 @@ class RelatedFieldsNameURLMixin():
             obj = getattr(instance, field)
             name = getattr(obj, lookup_field)
             ret[field] = [name, ret[field]]
-        ret['list_url'] = self.LIST_URL
         return ret
 
 
 class ArtistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artists
-        fields = ('name',)
+        fields = ('name', 'pk')
 
 
 class EmployeesSerializer(serializers.ModelSerializer):
@@ -70,13 +69,12 @@ class PlaylistTrackSerializer(serializers.ModelSerializer):
 
 class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSerializer):
     URL_CONFIG = {'artistid': 'name'}
-    LIST_URL = 'albums'
 
     artistid = serializers.HyperlinkedRelatedField('artists-detail', read_only=True)
 
     class Meta:
         model = Albums
-        fields = ('title', 'artistid')
+        fields = ('title', 'artistid', 'pk')
 
 
 class InvoiceItemsSerializer(serializers.ModelSerializer):
