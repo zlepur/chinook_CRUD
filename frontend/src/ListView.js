@@ -11,6 +11,7 @@ export default class ListView extends Component {
             list: null
         };
     }
+
     async componentDidMount() {
         if (!this.props.match.url) return;
         await this.fetchList(this.props.match.url);
@@ -28,7 +29,14 @@ export default class ListView extends Component {
         } catch (err) {
             console.error(err);
         }
-        this.setState({ list: response.data });
+
+        let list;
+        if (isArray(response.data)) {
+            list = response.data;
+        } else {
+            list = [response.data];
+        }
+        this.setState({ list });
     }
 
     buildTableBody() {

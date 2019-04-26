@@ -3,7 +3,6 @@ import "bulma";
 import "axios";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import ListView from "./ListView";
-import DetailView from "./DetailView";
 import ModelsView from "./ModelsView";
 import Axios from "axios";
 
@@ -51,7 +50,7 @@ export default class App extends Component {
                             </div>
                             <div className="column is-four-fifths">
                                 <Route exact path={"/:list"} component={ListView} />
-                                <Route path={`/:list/:pk`} component={DetailView} />
+                                <Route path={"/:list/:pk"} component={ListView} />
                             </div>
                         </div>
                     </div>
