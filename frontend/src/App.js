@@ -47,7 +47,12 @@ export default class App extends Component {
                     <Router>
                         <div className="columns">
                             <div className="column is-one-fifth">
-                                <ModelsView models={this.state.models} />
+                                <Route
+                                    path={"*"}
+                                    render={routeProps => (
+                                        <ModelsView {...routeProps} models={this.state.models} />
+                                    )}
+                                />
                             </div>
 
                             <div className="column is-four-fifths">
