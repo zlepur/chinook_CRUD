@@ -3,6 +3,7 @@ import "bulma";
 import "axios";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import ListView from "./ListView";
+import DetailView from "./DetailView";
 import ModelsView from "./ModelsView";
 import Axios from "axios";
 
@@ -30,48 +31,46 @@ export default class App extends Component {
 
     render() {
         return (
-            <Router>
-                <div className="App">
-                    <section className="hero is-dark">
-                        <div className="hero-body">
-                            <div className="container">
-                                <h1 className="title">Chinook CRUD app</h1>
-                                <h2 className="subtitle">
-                                    Powered by Django REST framework and React.js
-                                </h2>
-                            </div>
+            <div className="App">
+                <section className="hero is-dark">
+                    <div className="hero-body">
+                        <div className="container">
+                            <h1 className="title">Chinook CRUD app</h1>
+                            <h2 className="subtitle">
+                                Powered by Django REST framework and React.js
+                            </h2>
                         </div>
-                    </section>
+                    </div>
+                </section>
 
-                    <div className="container">
+                <div className="container">
+                    <Router>
                         <div className="columns">
                             <div className="column is-one-fifth">
                                 <ModelsView models={this.state.models} />
                             </div>
+
                             <div className="column is-four-fifths">
                                 <Route exact path={"/:list"} component={ListView} />
-                                <Route path={"/:list/:pk"} component={ListView} />
+                                <Route path={"/:list/:pk"} component={DetailView} />
                             </div>
                         </div>
-                    </div>
-
-                    <footer className="footer">
-                        <div className="content has-text-centered">
-                            <p>
-                                By <a href="mailto: zvonimir.lepur@gmail.com">Zvonimir Lepur</a>.
-                            </p>
-                            <p>
-                                The source code is licensed under
-                                <a href="http://opensource.org/licenses/mit-license.php">
-                                    {" "}
-                                    MIT
-                                </a>{" "}
-                                license.
-                            </p>
-                        </div>
-                    </footer>
+                    </Router>
                 </div>
-            </Router>
+
+                <footer className="footer">
+                    <div className="content has-text-centered">
+                        <p>
+                            By <a href="mailto: zvonimir.lepur@gmail.com">Zvonimir Lepur</a>.
+                        </p>
+                        <p>
+                            The source code is licensed under
+                            <a href="http://opensource.org/licenses/mit-license.php"> MIT</a>{" "}
+                            license.
+                        </p>
+                    </div>
+                </footer>
+            </div>
         );
     }
 }

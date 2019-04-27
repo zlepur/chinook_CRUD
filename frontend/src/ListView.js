@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import Axios from "axios";
-import { isArray } from "lodash";
+import TableBody from "./TableBody";
+import TableColumns from "./TableColumns";
+import Pagination from "./Pagination";
 import "bulma";
 import "./ListView.css";
 
@@ -8,80 +10,63 @@ export default class ListView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: null
+            data: null,
+            paginationData: null
         };
     }
 
     async componentDidMount() {
         if (!this.props.match.url) return;
-        await this.fetchList(this.props.match.url);
+        await this.fetchData(this.props.match.url);
     }
 
     async componentDidUpdate(prevProps) {
         if (this.props.match.url === prevProps.match.url) return;
-        await this.fetchList(this.props.match.url);
+        await this.fetchData(this.props.match.url);
     }
 
-    async fetchList(url) {
+    async fetchData(url) {
         let response;
         try {
             response = await Axios.get("http://localhost:8000" + url);
         } catch (err) {
             console.error(err);
+            this.setState({ data: null });
+            return;
         }
-
-        let list;
-        if (isArray(response.data)) {
-            list = response.data;
-        } else {
-            list = [response.data];
-        }
-        this.setState({ list });
+        this.setData(response);
     }
 
-    buildTableBody() {
-        let rows = [];
-        for (let row of this.state.list) {
-            let data = [];
-            for (let val in row) {
-                if (val === "pk") continue;
-                if (isArray(row[val]) && row[val][1] !== null) {
-                    let url = new URL(row[val][1]);
-                    data.push(
-                        <td key={val}>
-                            <a href={url.pathname}>{row[val][0]}</a>
-                        </td>
-                    );
-                } else {
-                    data.push(<td key={val}>{row[val]}</td>);
-                }
-            }
-            rows.push(<tr key={row.pk}>{data}</tr>);
-        }
-        return rows;
-    }
-
-    buildTableColumns() {
-        let column_names = [];
-        for (let name in this.state.list[0]) {
-            if (name === "pk") continue;
-            column_names.push(<th key={name}>{name}</th>);
-        }
-        return column_names;
+    setData(response) {
+        let paginationData = {
+            next: response.data.next,
+            previous: response.data.previous,
+            count: response.data.count
+        };
+        this.setState({
+            data: response.data.results,
+            paginationData: paginationData
+        });
     }
 
     render() {
-        if (!this.props.match.url || !this.state.list) return null;
-        let columnNames = this.buildTableColumns();
-        let tableBody = this.buildTableBody();
+        if (!this.props.match.url || !this.state.data) return null;
+
         return (
-            <div className="scrollable">
-                <table className="table">
-                    <thead>
-                        <tr>{columnNames}</tr>
-                    </thead>
-                    <tbody>{tableBody}</tbody>
-                </table>
+            <div>
+                <div className="scrollable">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <TableColumns data={this.state.data} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <TableBody data={this.state.data} />
+                        </tbody>
+                    </table>
+                </div>
+                <Pagination data={this.state.paginationData} />
             </div>
         );
     }
