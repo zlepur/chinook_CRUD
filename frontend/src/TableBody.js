@@ -8,7 +8,7 @@ export default function TableBody(props) {
         for (let [key, value] of Object.entries(row)) {
             if (key === "pk") continue;
 
-            if (isObject(value) && value.url !== null) {
+            if (isObject(value)) {
                 data.push(
                     <td key={key}>
                         <a href={value.url}>{value.data}</a>
