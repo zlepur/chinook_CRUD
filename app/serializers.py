@@ -1,3 +1,4 @@
+import urllib.parse
 from rest_framework import serializers
 from .models import (Artists, Employees, Customers, Invoices, MediaTypes, Genres, Tracks,
                      Playlists, PlaylistTrack, Albums, InvoiceItems)
@@ -9,8 +10,15 @@ class RelatedFieldsNameURLMixin():
         for field, lookup_field in self.URL_CONFIG.items():
             obj = getattr(instance, field)
             data = getattr(obj, lookup_field, None)
-            ret[field] = [data, ret[field]]
+            ret[field] = {'data': data, 'url': ret[field]}
         return ret
+
+
+class HyperlinkedPathRelatedField(serializers.HyperlinkedRelatedField):
+    def get_url(self, obj, view_name, request, format):
+        url = super().get_url(obj, view_name, request, format)
+        parse_result = urllib.parse.urlparse(url)
+        return parse_result.path
 
 
 class ArtistsSerializer(serializers.ModelSerializer):
@@ -21,7 +29,7 @@ class ArtistsSerializer(serializers.ModelSerializer):
 
 class EmployeesSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'reportsto': 'lastname'}
-    reportsto = serializers.HyperlinkedRelatedField('employees-detail', read_only=True)
+    reportsto = HyperlinkedPathRelatedField('employees-detail', read_only=True)
 
     class Meta:
         model = Employees
@@ -32,7 +40,7 @@ class EmployeesSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer
 
 class CustomersSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'supportrepid': 'lastname'}
-    supportrepid = serializers.HyperlinkedRelatedField('employees-detail', read_only=True)
+    supportrepid = HyperlinkedPathRelatedField('employees-detail', read_only=True)
 
     class Meta:
         model = Customers
@@ -43,7 +51,7 @@ class CustomersSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer
 
 class InvoicesSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'customerid': 'lastname'}
-    customerid = serializers.HyperlinkedRelatedField('customers-detail', read_only=True)
+    customerid = HyperlinkedPathRelatedField('customers-detail', read_only=True)
 
     class Meta:
         model = Invoices
@@ -66,9 +74,9 @@ class GenresSerializer(serializers.ModelSerializer):
 
 class TracksSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'albumid': 'title', 'mediatypeid': 'name', 'genreid': 'name'}
-    albumid = serializers.HyperlinkedRelatedField('albums-detail', read_only=True)
-    mediatypeid = serializers.HyperlinkedRelatedField('mediatypes-detail', read_only=True)
-    genreid = serializers.HyperlinkedRelatedField('genres-detail', read_only=True)
+    albumid = HyperlinkedPathRelatedField('albums-detail', read_only=True)
+    mediatypeid = HyperlinkedPathRelatedField('mediatypes-detail', read_only=True)
+    genreid = HyperlinkedPathRelatedField('genres-detail', read_only=True)
 
     class Meta:
         model = Tracks
@@ -84,8 +92,8 @@ class PlaylistsSerializer(serializers.ModelSerializer):
 
 class PlaylistTrackSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'playlistid': 'name', 'trackid': 'name'}
-    playlistid = serializers.HyperlinkedRelatedField('playlists-detail', read_only=True)
-    trackid = serializers.HyperlinkedRelatedField('tracks-detail', read_only=True)
+    playlistid = HyperlinkedPathRelatedField('playlists-detail', read_only=True)
+    trackid = HyperlinkedPathRelatedField('tracks-detail', read_only=True)
 
     class Meta:
         model = PlaylistTrack
@@ -95,7 +103,7 @@ class PlaylistTrackSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerial
 class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSerializer):
     URL_CONFIG = {'artistid': 'name'}
 
-    artistid = serializers.HyperlinkedRelatedField('artists-detail', read_only=True)
+    artistid = HyperlinkedPathRelatedField('artists-detail', read_only=True)
 
     class Meta:
         model = Albums
@@ -104,8 +112,8 @@ class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSe
 
 class InvoiceItemsSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
     URL_CONFIG = {'invoiceid': 'pk', 'trackid': 'name'}
-    invoiceid = serializers.HyperlinkedRelatedField('invoices-detail', read_only=True)
-    trackid = serializers.HyperlinkedRelatedField('tracks-detail', read_only=True)
+    invoiceid = HyperlinkedPathRelatedField('invoices-detail', read_only=True)
+    trackid = HyperlinkedPathRelatedField('tracks-detail', read_only=True)
 
     class Meta:
         model = InvoiceItems
