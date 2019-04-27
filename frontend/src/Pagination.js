@@ -5,19 +5,16 @@ export default function Pagination(props) {
     if (!props.data) return null;
     return (
         <nav className="pagination" role="navigation" aria-label="pagination">
-            <a className="pagination-previous" href={props.data.previous}>
+            <a
+                className="pagination-previous"
+                disabled={!props.data.previous}
+                href={props.data.previous}
+            >
                 Previous
             </a>
-            <a className="pagination-next" href={props.data.next}>
+            <a className="pagination-next" disabled={!props.data.next} href={props.data.next}>
                 Next
             </a>
-            <ul className="pagination-list">
-                <li>
-                    <a className="pagination-link" aria-label="Goto page 1">
-                        1
-                    </a>
-                </li>
-            </ul>
         </nav>
     );
 }

@@ -17,18 +17,21 @@ export default class ListView extends Component {
 
     async componentDidMount() {
         if (!this.props.match.url) return;
-        await this.fetchData(this.props.match.url);
+        await this.fetchData(this.props.location);
     }
 
     async componentDidUpdate(prevProps) {
         if (this.props.match.url === prevProps.match.url) return;
-        await this.fetchData(this.props.match.url);
+        await this.fetchData(this.props.location);
     }
 
-    async fetchData(url) {
+    async fetchData(location) {
         let response;
         try {
-            response = await Axios.get("http://localhost:8000" + url);
+            let url = new URL("http://localhost:8000");
+            url.pathname = location.pathname;
+            url.search = location.search;
+            response = await Axios.get(url.toString());
         } catch (err) {
             console.error(err);
             this.setState({ data: null });
