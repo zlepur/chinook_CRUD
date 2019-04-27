@@ -45,7 +45,7 @@ export default class ListView extends Component {
             let data = [];
             for (let val in row) {
                 if (val === "pk") continue;
-                if (isArray(row[val])) {
+                if (isArray(row[val]) && row[val][1] !== null) {
                     let url = new URL(row[val][1]);
                     data.push(
                         <td key={val}>

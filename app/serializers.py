@@ -8,8 +8,8 @@ class RelatedFieldsNameURLMixin():
         ret = super().to_representation(instance)
         for field, lookup_field in self.URL_CONFIG.items():
             obj = getattr(instance, field)
-            name = getattr(obj, lookup_field)
-            ret[field] = [name, ret[field]]
+            data = getattr(obj, lookup_field, None)
+            ret[field] = [data, ret[field]]
         return ret
 
 
@@ -19,52 +19,77 @@ class ArtistsSerializer(serializers.ModelSerializer):
         fields = ('name', 'pk')
 
 
-class EmployeesSerializer(serializers.ModelSerializer):
+class EmployeesSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'reportsto': 'lastname'}
+    reportsto = serializers.HyperlinkedRelatedField('employees-detail', read_only=True)
+
     class Meta:
         model = Employees
-        exclude = ('employeeid',)
+        fields = ('lastname', 'firstname', 'title', 'reportsto', 'birthdate', 'hiredate',
+                  'address', 'city', 'state', 'country', 'postalcode', 'phone', 'fax', 'email',
+                  'pk')
 
 
-class CustomersSerializer(serializers.ModelSerializer):
+class CustomersSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'supportrepid': 'lastname'}
+    supportrepid = serializers.HyperlinkedRelatedField('employees-detail', read_only=True)
+
     class Meta:
         model = Customers
-        exclude = ('customerid',)
+        fields = ('firstname', 'lastname', 'company', 'address',
+                  'city', 'state', 'country', 'postalcode', 'phone', 'fax', 'email', 'supportrepid',
+                  'pk')
 
 
-class InvoicesSerializer(serializers.ModelSerializer):
+class InvoicesSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'customerid': 'lastname'}
+    customerid = serializers.HyperlinkedRelatedField('customers-detail', read_only=True)
+
     class Meta:
         model = Invoices
-        exclude = ('invoiceid',)
+        fields = ('customerid', 'invoicedate', 'billingaddress',
+                  'billingcity', 'billingstate', 'billingcountry', 'billingpostalcode', 'total',
+                  'pk')
 
 
 class MediaTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = MediaTypes
-        exclude = ('mediatypeid',)
+        fields = ('name', 'pk')
 
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genres
-        exclude = ('genreid',)
+        fields = ('name', 'pk')
 
 
-class TracksSerializer(serializers.ModelSerializer):
+class TracksSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'albumid': 'title', 'mediatypeid': 'name', 'genreid': 'name'}
+    albumid = serializers.HyperlinkedRelatedField('albums-detail', read_only=True)
+    mediatypeid = serializers.HyperlinkedRelatedField('mediatypes-detail', read_only=True)
+    genreid = serializers.HyperlinkedRelatedField('genres-detail', read_only=True)
+
     class Meta:
         model = Tracks
-        exclude = ('trackid',)
+        fields = ('name', 'albumid', 'mediatypeid', 'genreid',
+                  'composer', 'milliseconds', 'bytes', 'unitprice', 'pk')
 
 
 class PlaylistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlists
-        exclude = ('playlistid',)
+        fields = ('name', 'pk')
 
 
-class PlaylistTrackSerializer(serializers.ModelSerializer):
+class PlaylistTrackSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'playlistid': 'name', 'trackid': 'name'}
+    playlistid = serializers.HyperlinkedRelatedField('playlists-detail', read_only=True)
+    trackid = serializers.HyperlinkedRelatedField('tracks-detail', read_only=True)
+
     class Meta:
         model = PlaylistTrack
-        fields = ('playlistid', 'trackid')
+        fields = ('playlistid', 'trackid', 'pk')
 
 
 class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSerializer):
@@ -77,7 +102,11 @@ class AlbumsSerializer(RelatedFieldsNameURLMixin, serializers.HyperlinkedModelSe
         fields = ('title', 'artistid', 'pk')
 
 
-class InvoiceItemsSerializer(serializers.ModelSerializer):
+class InvoiceItemsSerializer(RelatedFieldsNameURLMixin, serializers.ModelSerializer):
+    URL_CONFIG = {'invoiceid': 'pk', 'trackid': 'name'}
+    invoiceid = serializers.HyperlinkedRelatedField('invoices-detail', read_only=True)
+    trackid = serializers.HyperlinkedRelatedField('tracks-detail', read_only=True)
+
     class Meta:
         model = InvoiceItems
-        exclude = ('invoiceitemid',)
+        fields = ('invoiceid', 'trackid', 'unitprice', 'quantity', 'pk')
