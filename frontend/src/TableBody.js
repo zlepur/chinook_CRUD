@@ -1,24 +1,56 @@
-import React from "react";
-import { isObject } from "lodash";
+import React, { Component } from "react";
+import TableRow from "./TableRow";
 
-export default function TableBody(props) {
-    let rows = [];
-    for (let row of props.data) {
-        let data = [];
-        for (let [key, value] of Object.entries(row)) {
-            if (key === "pk") continue;
-
-            if (isObject(value)) {
-                data.push(
-                    <td key={key}>
-                        <a href={value.url}>{value.data}</a>
-                    </td>
-                );
-            } else {
-                data.push(<td key={key}>{value}</td>);
-            }
-        }
-        rows.push(<tr key={row.pk}>{data}</tr>);
+export default class TableBody extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hoverKey: null,
+            editModeKey: null
+        };
+        this.handleMouseEnter = this.handleMouseEnter.bind(this);
+        this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.setEditMode = this.setEditMode.bind(this);
     }
-    return rows;
+
+    handleMouseEnter(evt) {
+        let hoverKey = evt.currentTarget.getAttribute("data-key");
+        if (this.state.editModeKey === hoverKey) return;
+        this.setState({ hoverKey });
+    }
+
+    handleMouseLeave(evt) {
+        this.setState({ hoverKey: null });
+    }
+
+    setEditMode(evt) {
+        let elem = evt.currentTarget.closest("tr");
+        let editModeKey = elem.getAttribute("data-key");
+        this.setState({ editModeKey, hoverKey: null });
+    }
+
+    render() {
+        let rows = [];
+        for (let rowData of this.props.data) {
+            let row = (
+                <TableRow
+                    rowData={rowData}
+                    editModeKey={parseInt(this.state.editModeKey)}
+                    hoverKey={parseInt(this.state.hoverKey)}
+                    setEditMode={this.setEditMode}
+                />
+            );
+            rows.push(
+                <tr
+                    onMouseEnter={this.handleMouseEnter}
+                    onMouseLeave={this.handleMouseLeave}
+                    key={rowData.pk}
+                    data-key={rowData.pk}
+                >
+                    {row}
+                </tr>
+            );
+        }
+        return rows;
+    }
 }
