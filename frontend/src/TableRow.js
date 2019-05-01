@@ -13,7 +13,15 @@ export default function TableRow(props) {
                 </td>
             );
         } else if (props.rowData.pk === props.editModeKey) {
-            data.push(<GenericInput value={value} key={key} />);
+            data.push(
+                <GenericInput
+                    value={value}
+                    key={key}
+                    onInputChange={props.onInputChange}
+                    inputID={key}
+                    rowID={props.rowData.pk}
+                />
+            );
         } else {
             data.push(<td key={key}>{value}</td>);
         }
@@ -33,6 +41,11 @@ export default function TableRow(props) {
                 <button onClick={props.saveChanges}>Save</button>
             </td>
         );
+        data.push(
+            <td key="cancelButton">
+                <button onClick={evt => props.cancelChanges(props.rowData.pk)}>Cancel</button>
+            </td>
+        );
     }
     return data;
 }
@@ -41,7 +54,11 @@ function GenericInput(props) {
     let type = isInteger(props.value) ? "number" : "text";
     return (
         <td>
-            <input value={props.value} type={type} readOnly />
+            <input
+                value={props.value}
+                type={type}
+                onChange={evt => props.onInputChange(evt.target.value, props.rowID, props.inputID)}
+            />
         </td>
     );
 }

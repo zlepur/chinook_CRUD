@@ -11,8 +11,17 @@ export default class ListView extends Component {
         super(props);
         this.state = {
             data: null,
-            paginationData: null
+            paginationData: null,
+            hoverKey: null,
+            editModeKey: null
         };
+        this.backupRow = null;
+        this.handleMouseEnter = this.handleMouseEnter.bind(this);
+        this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.setEditMode = this.setEditMode.bind(this);
+        this.onInputChange = this.onInputChange.bind(this);
+        this.saveChanges = this.saveChanges.bind(this);
+        this.cancelChanges = this.cancelChanges.bind(this);
     }
 
     async componentDidMount() {
@@ -52,6 +61,47 @@ export default class ListView extends Component {
         });
     }
 
+    onInputChange(value, rowID, inputID) {
+        let pk = rowID - 1;
+        let data = [...this.state.data];
+        let row = { ...data[pk] };
+        row[inputID] = value;
+        data[pk] = row;
+        this.setState({ data });
+    }
+
+    saveChanges(evt) {
+        //TODO: Make a network request
+        this.setState({ editModeKey: null });
+    }
+
+    handleMouseEnter(evt) {
+        let hoverKey = evt.currentTarget.getAttribute("data-key");
+        if (this.state.editModeKey === hoverKey) return;
+        this.setState({ hoverKey });
+    }
+
+    handleMouseLeave(evt) {
+        this.setState({ hoverKey: null });
+    }
+
+    setEditMode(evt) {
+        let elem = evt.currentTarget.closest("tr");
+        let editModeKey = elem.getAttribute("data-key");
+        let pk = editModeKey - 1;
+        this.backupRow = this.state.data[pk];
+        console.log(this.backupRow);
+        this.setState({ editModeKey, hoverKey: null });
+    }
+
+    cancelChanges(rowID) {
+        let pk = rowID - 1;
+        let data = [...this.state.data];
+        data[pk] = this.backupRow;
+        this.backupRow = null;
+        this.setState({ data, editModeKey: null });
+    }
+
     render() {
         if (!this.props.match.url || !this.state.data) return null;
 
@@ -65,7 +115,17 @@ export default class ListView extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            <TableBody data={this.state.data} />
+                            <TableBody
+                                data={this.state.data}
+                                editModeKey={parseInt(this.state.editModeKey)}
+                                hoverKey={parseInt(this.state.hoverKey)}
+                                setEditMode={this.setEditMode}
+                                onInputChange={this.onInputChange}
+                                saveChanges={this.saveChanges}
+                                onMouseEnter={this.handleMouseEnter}
+                                onMouseLeave={this.handleMouseLeave}
+                                cancelChanges={this.cancelChanges}
+                            />
                         </tbody>
                     </table>
                 </div>
