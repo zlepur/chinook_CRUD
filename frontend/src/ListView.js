@@ -72,6 +72,7 @@ export default class ListView extends Component {
 
     saveChanges(evt) {
         //TODO: Make a network request
+        this.backupRow = null;
         this.setState({ editModeKey: null });
     }
 
@@ -86,18 +87,20 @@ export default class ListView extends Component {
     }
 
     setEditMode(evt) {
+        if (this.backupRow !== null) {
+            this.cancelChanges();
+        }
         let elem = evt.currentTarget.closest("tr");
         let editModeKey = elem.getAttribute("data-key");
         let pk = editModeKey - 1;
-        this.backupRow = this.state.data[pk];
-        console.log(this.backupRow);
+        this.backupRow = [this.state.data[pk], pk];
         this.setState({ editModeKey, hoverKey: null });
     }
 
-    cancelChanges(rowID) {
-        let pk = rowID - 1;
+    cancelChanges() {
         let data = [...this.state.data];
-        data[pk] = this.backupRow;
+        let [backupRow, pk] = this.backupRow;
+        data[pk] = backupRow;
         this.backupRow = null;
         this.setState({ data, editModeKey: null });
     }

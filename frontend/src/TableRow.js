@@ -43,7 +43,7 @@ export default function TableRow(props) {
         );
         data.push(
             <td key="cancelButton">
-                <button onClick={evt => props.cancelChanges(props.rowData.pk)}>Cancel</button>
+                <button onClick={evt => props.cancelChanges()}>Cancel</button>
             </td>
         );
     }
