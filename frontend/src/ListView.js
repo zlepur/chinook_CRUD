@@ -11,14 +11,9 @@ export default class ListView extends Component {
         super(props);
         this.state = {
             data: null,
-            paginationData: null,
-            editMode: null
+            paginationData: null
         };
-        this.backupRow = null;
-        this.setEditMode = this.setEditMode.bind(this);
-        this.onInputChange = this.onInputChange.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
-        this.cancelChanges = this.cancelChanges.bind(this);
     }
 
     async componentDidMount() {
@@ -58,38 +53,8 @@ export default class ListView extends Component {
         });
     }
 
-    onInputChange(value, rowID, inputID) {
-        let pk = rowID - 1;
-        let data = [...this.state.data];
-        let row = { ...data[pk] };
-        row[inputID] = value;
-        data[pk] = row;
-        this.setState({ data });
-    }
-
-    saveChanges(evt) {
+    saveChanges(rowData) {
         //TODO: Make a network request
-        this.backupRow = null;
-        this.setState({ editMode: null });
-    }
-
-    setEditMode(evt) {
-        if (this.backupRow !== null) {
-            this.cancelChanges();
-        }
-        let elem = evt.currentTarget.closest("tr");
-        let editMode = elem.getAttribute("data-key");
-        let pk = editMode - 1;
-        this.backupRow = [this.state.data[pk], pk];
-        this.setState({ editMode });
-    }
-
-    cancelChanges() {
-        let data = [...this.state.data];
-        let [backupRow, pk] = this.backupRow;
-        data[pk] = backupRow;
-        this.backupRow = null;
-        this.setState({ data, editMode: null });
     }
 
     render() {
@@ -105,14 +70,7 @@ export default class ListView extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            <TableBody
-                                data={this.state.data}
-                                editMode={parseInt(this.state.editMode)}
-                                setEditMode={this.setEditMode}
-                                onInputChange={this.onInputChange}
-                                saveChanges={this.saveChanges}
-                                cancelChanges={this.cancelChanges}
-                            />
+                            <TableBody data={this.state.data} saveChanges={this.saveChanges} />
                         </tbody>
                     </table>
                 </div>

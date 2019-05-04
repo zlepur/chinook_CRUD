@@ -4,16 +4,7 @@ import TableRow from "./TableRow";
 export default function TableBody(props) {
     let rows = [];
     for (let rowData of props.data) {
-        let row = (
-            <TableRow
-                rowData={rowData}
-                editMode={props.editMode}
-                setEditMode={props.setEditMode}
-                onInputChange={props.onInputChange}
-                saveChanges={props.saveChanges}
-                cancelChanges={props.cancelChanges}
-            />
-        );
+        let row = <TableRow rowData={rowData} saveChanges={props.saveChanges} />;
         rows.push(
             <tr key={rowData.pk} data-key={rowData.pk}>
                 {row}
