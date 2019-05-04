@@ -12,12 +12,9 @@ export default class ListView extends Component {
         this.state = {
             data: null,
             paginationData: null,
-            hoverKey: null,
-            editModeKey: null
+            editMode: null
         };
         this.backupRow = null;
-        this.handleMouseEnter = this.handleMouseEnter.bind(this);
-        this.handleMouseLeave = this.handleMouseLeave.bind(this);
         this.setEditMode = this.setEditMode.bind(this);
         this.onInputChange = this.onInputChange.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
@@ -73,17 +70,7 @@ export default class ListView extends Component {
     saveChanges(evt) {
         //TODO: Make a network request
         this.backupRow = null;
-        this.setState({ editModeKey: null });
-    }
-
-    handleMouseEnter(evt) {
-        let hoverKey = evt.currentTarget.getAttribute("data-key");
-        if (this.state.editModeKey === hoverKey) return;
-        this.setState({ hoverKey });
-    }
-
-    handleMouseLeave(evt) {
-        this.setState({ hoverKey: null });
+        this.setState({ editMode: null });
     }
 
     setEditMode(evt) {
@@ -91,10 +78,10 @@ export default class ListView extends Component {
             this.cancelChanges();
         }
         let elem = evt.currentTarget.closest("tr");
-        let editModeKey = elem.getAttribute("data-key");
-        let pk = editModeKey - 1;
+        let editMode = elem.getAttribute("data-key");
+        let pk = editMode - 1;
         this.backupRow = [this.state.data[pk], pk];
-        this.setState({ editModeKey, hoverKey: null });
+        this.setState({ editMode });
     }
 
     cancelChanges() {
@@ -102,7 +89,7 @@ export default class ListView extends Component {
         let [backupRow, pk] = this.backupRow;
         data[pk] = backupRow;
         this.backupRow = null;
-        this.setState({ data, editModeKey: null });
+        this.setState({ data, editMode: null });
     }
 
     render() {
@@ -111,7 +98,7 @@ export default class ListView extends Component {
         return (
             <div>
                 <div className="scrollable">
-                    <table className="table">
+                    <table className="table is-fullwidth">
                         <thead>
                             <tr>
                                 <TableColumns data={this.state.data} />
@@ -120,13 +107,10 @@ export default class ListView extends Component {
                         <tbody>
                             <TableBody
                                 data={this.state.data}
-                                editModeKey={parseInt(this.state.editModeKey)}
-                                hoverKey={parseInt(this.state.hoverKey)}
+                                editMode={parseInt(this.state.editMode)}
                                 setEditMode={this.setEditMode}
                                 onInputChange={this.onInputChange}
                                 saveChanges={this.saveChanges}
-                                onMouseEnter={this.handleMouseEnter}
-                                onMouseLeave={this.handleMouseLeave}
                                 cancelChanges={this.cancelChanges}
                             />
                         </tbody>

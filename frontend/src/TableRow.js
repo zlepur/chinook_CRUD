@@ -1,5 +1,5 @@
 import React from "react";
-import { isObject, isInteger } from "lodash";
+import { isObject, toNumber, isNaN } from "lodash";
 
 export default function TableRow(props) {
     let data = [];
@@ -12,7 +12,7 @@ export default function TableRow(props) {
                     <a href={value.url}>{value.data}</a>
                 </td>
             );
-        } else if (props.rowData.pk === props.editModeKey) {
+        } else if (props.rowData.pk === props.editMode) {
             data.push(
                 <GenericInput
                     value={value}
@@ -27,15 +27,7 @@ export default function TableRow(props) {
         }
     }
 
-    if (props.hoverKey === props.rowData.pk) {
-        data.push(
-            <td key="editButton">
-                <button onClick={props.setEditMode}>Edit</button>
-            </td>
-        );
-    }
-
-    if (props.editModeKey === props.rowData.pk) {
+    if (props.editMode === props.rowData.pk) {
         data.push(
             <td key="saveButton">
                 <button onClick={props.saveChanges}>Save</button>
@@ -46,12 +38,19 @@ export default function TableRow(props) {
                 <button onClick={evt => props.cancelChanges()}>Cancel</button>
             </td>
         );
+    } else {
+        data.push(
+            <td key="editButton">
+                <button onClick={props.setEditMode}>Edit</button>
+            </td>
+        );
     }
     return data;
 }
 
 function GenericInput(props) {
-    let type = isInteger(props.value) ? "number" : "text";
+    let maybeNum = toNumber(props.value);
+    let type = isNaN(maybeNum) ? "text" : "number";
     return (
         <td>
             <input

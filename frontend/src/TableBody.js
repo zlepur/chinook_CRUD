@@ -7,8 +7,7 @@ export default function TableBody(props) {
         let row = (
             <TableRow
                 rowData={rowData}
-                editModeKey={props.editModeKey}
-                hoverKey={props.hoverKey}
+                editMode={props.editMode}
                 setEditMode={props.setEditMode}
                 onInputChange={props.onInputChange}
                 saveChanges={props.saveChanges}
@@ -16,12 +15,7 @@ export default function TableBody(props) {
             />
         );
         rows.push(
-            <tr
-                onMouseEnter={props.onMouseEnter}
-                onMouseLeave={props.onMouseLeave}
-                key={rowData.pk}
-                data-key={rowData.pk}
-            >
+            <tr key={rowData.pk} data-key={rowData.pk}>
                 {row}
             </tr>
         );
