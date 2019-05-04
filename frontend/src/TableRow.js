@@ -5,18 +5,29 @@ export default class TableRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.rowData,
+            data: { ...props.rowData },
             editMode: false
         };
-        this.baseState = this.state;
+        this.baseState = this.state.data;
         this.onInputChange = this.onInputChange.bind(this);
         this.cancel = this.cancel.bind(this);
         this.toggleEditMode = this.toggleEditMode.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
+        this.types = this.buildTypes(props.rowData);
     }
 
     cancel(evt) {
-        this.setState(this.baseState);
+        this.setState({ data: this.baseState, editMode: false });
+    }
+
+    buildTypes(rowData) {
+        let types = {};
+        for (let [key, value] of Object.entries(rowData)) {
+            let maybeNum = toNumber(value);
+            let type = isNaN(maybeNum) ? "text" : "number";
+            types[key] = type;
+        }
+        return types;
     }
 
     onInputChange(evt) {
@@ -33,8 +44,8 @@ export default class TableRow extends Component {
 
     saveChanges(evt) {
         this.props.saveChanges(this.state.data);
-        this.baseState = this.state;
-        this.toggleEditMode();
+        this.baseState = this.state.data;
+        this.setState({ editMode: false });
     }
 
     render() {
@@ -50,12 +61,14 @@ export default class TableRow extends Component {
                 );
             } else if (this.state.editMode) {
                 data.push(
-                    <GenericInput
-                        value={value}
-                        key={key}
-                        inputid={key}
-                        onInputChange={this.onInputChange}
-                    />
+                    <td key={key}>
+                        <GenericInput
+                            value={value}
+                            inputid={key}
+                            onInputChange={this.onInputChange}
+                            type={this.types[key]}
+                        />
+                    </td>
                 );
             } else {
                 data.push(<td key={key}>{value}</td>);
@@ -85,16 +98,12 @@ export default class TableRow extends Component {
 }
 
 function GenericInput(props) {
-    let maybeNum = toNumber(props.value);
-    let type = isNaN(maybeNum) ? "text" : "number";
     return (
-        <td>
-            <input
-                value={props.value}
-                type={type}
-                data-inputid={props.inputid}
-                onChange={props.onInputChange}
-            />
-        </td>
+        <input
+            value={props.value}
+            type={props.type}
+            data-inputid={props.inputid}
+            onChange={props.onInputChange}
+        />
     );
 }
