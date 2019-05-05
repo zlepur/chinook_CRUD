@@ -70,7 +70,11 @@ export default class ListView extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            <TableBody data={this.state.data} saveChanges={this.saveChanges} />
+                            <TableBody
+                                data={this.state.data}
+                                tableUrl={this.props.match.url}
+                                saveChanges={this.saveChanges}
+                            />
                         </tbody>
                     </table>
                 </div>

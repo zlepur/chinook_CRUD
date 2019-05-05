@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { isObject, toNumber, isNaN } from "lodash";
+import { isObject, toNumber, isNaN, isEqual } from "lodash";
 
 export default class TableRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: { ...props.rowData },
+            data: props.rowData,
             editMode: false
         };
         this.baseState = this.state.data;
@@ -14,6 +14,12 @@ export default class TableRow extends Component {
         this.toggleEditMode = this.toggleEditMode.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
         this.types = this.buildTypes(props.rowData);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (isEqual(prevProps.rowData, this.props.rowData)) return;
+        this.setState({ data: this.props.rowData });
+        this.baseState = this.props.rowData;
     }
 
     cancel(evt) {
@@ -62,10 +68,10 @@ export default class TableRow extends Component {
             } else if (this.state.editMode) {
                 data.push(
                     <td key={key}>
-                        <GenericInput
+                        <input
                             value={value}
-                            inputid={key}
-                            onInputChange={this.onInputChange}
+                            data-inputid={key}
+                            onChange={this.onInputChange}
                             type={this.types[key]}
                         />
                     </td>
@@ -93,17 +99,6 @@ export default class TableRow extends Component {
                 </td>
             );
         }
-        return data;
+        return <tr>{data}</tr>;
     }
-}
-
-function GenericInput(props) {
-    return (
-        <input
-            value={props.value}
-            type={props.type}
-            data-inputid={props.inputid}
-            onChange={props.onInputChange}
-        />
-    );
 }
