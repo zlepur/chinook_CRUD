@@ -49,7 +49,7 @@ export default class TableRow extends Component {
     }
 
     saveChanges(evt) {
-        this.props.saveChanges(this.state.data);
+        this.props.saveChanges(this.props.tablePath, this.state.data);
         this.baseState = this.state.data;
         this.setState({ editMode: false });
     }

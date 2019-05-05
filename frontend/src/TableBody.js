@@ -6,9 +6,9 @@ export default function TableBody(props) {
     for (let rowData of props.data) {
         rows.push(
             <TableRow
-                key={`${props.tableUrl}-${rowData.pk}`}
+                key={`${props.tablePath}-${rowData.pk}`}
                 rowData={rowData}
-                tableUrl={props.tableUrl}
+                tablePath={props.tablePath}
                 saveChanges={props.saveChanges}
             />
         );

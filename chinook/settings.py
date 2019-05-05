@@ -129,3 +129,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'chinook.utils.Pagination',
     'PAGE_SIZE': 20
 }
+APPEND_SLASH = False

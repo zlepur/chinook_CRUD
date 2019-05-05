@@ -14,34 +14,35 @@ export default class ListView extends Component {
             paginationData: null
         };
         this.saveChanges = this.saveChanges.bind(this);
+        this.hostURL = "http://localhost:8000";
     }
 
     async componentDidMount() {
         if (!this.props.match.url) return;
-        await this.fetchData(this.props.location);
+        await this.fetchTableData(this.props.location);
     }
 
     async componentDidUpdate(prevProps) {
         if (this.props.match.url === prevProps.match.url) return;
-        await this.fetchData(this.props.location);
+        await this.fetchTableData(this.props.location);
     }
 
-    async fetchData(location) {
-        let response;
+    async fetchTableData(location) {
+        let url = new URL(this.hostURL);
+        url.pathname = location.pathname;
+        url.search = location.search;
         try {
-            let url = new URL("http://localhost:8000");
-            url.pathname = location.pathname;
-            url.search = location.search;
-            response = await Axios.get(url.toString());
+            var response = await Axios.get(url.toString());
         } catch (err) {
             console.error(err);
+            // TODO: Alert user of error!
             this.setState({ data: null });
             return;
         }
-        this.setData(response);
+        this.setTableData(response);
     }
 
-    setData(response) {
+    setTableData(response) {
         let paginationData = {
             next: response.data.next,
             previous: response.data.previous,
@@ -53,8 +54,13 @@ export default class ListView extends Component {
         });
     }
 
-    saveChanges(rowData) {
-        //TODO: Make a network request
+    saveChanges(tablePath, rowData) {
+        let url = new URL(this.hostURL);
+        url.pathname = `${tablePath}${rowData.pk}/`;
+        Axios.put(url.toString(), rowData).catch(err => {
+            console.error(err);
+            // TODO: Alert user of error!
+        });
     }
 
     render() {
@@ -72,7 +78,7 @@ export default class ListView extends Component {
                         <tbody>
                             <TableBody
                                 data={this.state.data}
-                                tableUrl={this.props.match.url}
+                                tablePath={this.props.match.url}
                                 saveChanges={this.saveChanges}
                             />
                         </tbody>
