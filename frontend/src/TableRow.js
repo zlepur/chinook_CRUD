@@ -13,6 +13,7 @@ export default class TableRow extends Component {
         this.cancel = this.cancel.bind(this);
         this.toggleEditMode = this.toggleEditMode.bind(this);
         this.saveChanges = this.saveChanges.bind(this);
+        this.deleteRow = this.deleteRow.bind(this);
         this.types = this.buildTypes(props.rowData);
     }
 
@@ -54,7 +55,14 @@ export default class TableRow extends Component {
         this.setState({ editMode: false });
     }
 
+    deleteRow(evt) {
+        let isDeleted = this.props.deleteRow(this.props.tablePath, this.state.data.pk);
+        if (isDeleted) this.setState({ data: null, editMode: false });
+    }
+
     render() {
+        if (this.state.data === null) return null;
+
         let data = [];
         for (let [key, value] of Object.entries(this.state.data)) {
             if (key === "pk") continue;
@@ -96,6 +104,11 @@ export default class TableRow extends Component {
             data.push(
                 <td key="editButton">
                     <button onClick={this.toggleEditMode}>Edit</button>
+                </td>
+            );
+            data.push(
+                <td key="deleteButton">
+                    <button onClick={this.deleteRow}>Delete</button>
                 </td>
             );
         }

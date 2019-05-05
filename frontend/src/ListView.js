@@ -14,6 +14,7 @@ export default class ListView extends Component {
             paginationData: null
         };
         this.saveChanges = this.saveChanges.bind(this);
+        this.deleteRow = this.deleteRow.bind(this);
         this.hostURL = "http://localhost:8000";
     }
 
@@ -63,6 +64,17 @@ export default class ListView extends Component {
         });
     }
 
+    deleteRow(tablePath, pk) {
+        if (!window.confirm("Are you sure you want to delete this row?")) return false;
+        let url = new URL(this.hostURL);
+        url.pathname = `${tablePath}${pk}/`;
+        Axios.delete(url.toString()).catch(err => {
+            console.error(err);
+            // TODO: Alert user of error!
+        });
+        return true;
+    }
+
     render() {
         if (!this.props.match.url || !this.state.data) return null;
 
@@ -80,6 +92,7 @@ export default class ListView extends Component {
                                 data={this.state.data}
                                 tablePath={this.props.match.url}
                                 saveChanges={this.saveChanges}
+                                deleteRow={this.deleteRow}
                             />
                         </tbody>
                     </table>

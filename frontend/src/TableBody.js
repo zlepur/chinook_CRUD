@@ -10,6 +10,7 @@ export default function TableBody(props) {
                 rowData={rowData}
                 tablePath={props.tablePath}
                 saveChanges={props.saveChanges}
+                deleteRow={props.deleteRow}
             />
         );
     }
