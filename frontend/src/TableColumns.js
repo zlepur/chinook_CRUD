@@ -6,5 +6,7 @@ export default function TableColumns(props) {
         if (name === "pk") continue;
         column_names.push(<th key={name}>{name}</th>);
     }
+    column_names.push(<th key="actions" />);
+    column_names.push(<th key="cancelActionHeader" />);
     return column_names;
 }
