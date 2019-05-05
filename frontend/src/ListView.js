@@ -15,7 +15,6 @@ export default class ListView extends Component {
         };
         this.saveChanges = this.saveChanges.bind(this);
         this.deleteRow = this.deleteRow.bind(this);
-        this.hostURL = "http://localhost:8000";
     }
 
     async componentDidMount() {
@@ -29,7 +28,7 @@ export default class ListView extends Component {
     }
 
     async fetchTableData(location) {
-        let url = new URL(this.hostURL);
+        let url = new URL(this.props.hostURL);
         url.pathname = location.pathname;
         url.search = location.search;
         try {
@@ -56,7 +55,7 @@ export default class ListView extends Component {
     }
 
     saveChanges(tablePath, rowData) {
-        let url = new URL(this.hostURL);
+        let url = new URL(this.props.hostURL);
         url.pathname = `${tablePath}${rowData.pk}/`;
         Axios.put(url.toString(), rowData).catch(err => {
             console.error(err);
@@ -66,7 +65,7 @@ export default class ListView extends Component {
 
     deleteRow(tablePath, pk) {
         if (!window.confirm("Are you sure you want to delete this row?")) return false;
-        let url = new URL(this.hostURL);
+        let url = new URL(this.props.hostURL);
         url.pathname = `${tablePath}${pk}/`;
         Axios.delete(url.toString()).catch(err => {
             console.error(err);

@@ -13,6 +13,7 @@ export default class App extends Component {
         this.state = {
             models: null
         };
+        this.hostURL = "http://localhost:8000";
     }
 
     async componentDidMount() {
@@ -20,9 +21,8 @@ export default class App extends Component {
     }
 
     async fetchModels() {
-        let response;
         try {
-            response = await Axios.get("http://localhost:8000/");
+            var response = await Axios.get(this.hostURL);
         } catch (err) {
             console.error(err);
         }
@@ -56,8 +56,19 @@ export default class App extends Component {
                             </div>
 
                             <div className="column is-four-fifths">
-                                <Route exact path={"/:list"} component={ListView} />
-                                <Route path={"/:list/:pk"} component={DetailView} />
+                                <Route
+                                    exact
+                                    path={"/:list"}
+                                    render={routeProps => (
+                                        <ListView {...routeProps} hostURL={this.hostURL} />
+                                    )}
+                                />
+                                <Route
+                                    path={"/:list/:pk"}
+                                    render={routeProps => (
+                                        <DetailView {...routeProps} hostURL={this.hostURL} />
+                                    )}
+                                />
                             </div>
                         </div>
                     </Router>

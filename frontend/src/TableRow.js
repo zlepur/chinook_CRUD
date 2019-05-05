@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { isObject, toNumber, isNaN, isEqual } from "lodash";
+import "bulma";
 
 export default class TableRow extends Component {
     constructor(props) {
@@ -77,6 +78,7 @@ export default class TableRow extends Component {
                 data.push(
                     <td key={key}>
                         <input
+                            className="input"
                             value={value}
                             data-inputid={key}
                             onChange={this.onInputChange}
@@ -92,23 +94,31 @@ export default class TableRow extends Component {
         if (this.state.editMode) {
             data.push(
                 <td key="saveButton">
-                    <button onClick={this.saveChanges}>Save</button>
+                    <button className="button is-info" onClick={this.saveChanges}>
+                        Save
+                    </button>
                 </td>
             );
             data.push(
                 <td key="cancelButton">
-                    <button onClick={this.cancel}>Cancel</button>
+                    <button className="button is-primary" onClick={this.cancel}>
+                        Cancel
+                    </button>
                 </td>
             );
         } else {
             data.push(
                 <td key="editButton">
-                    <button onClick={this.toggleEditMode}>Edit</button>
+                    <button className="button is-link" onClick={this.toggleEditMode}>
+                        Edit
+                    </button>
                 </td>
             );
             data.push(
                 <td key="deleteButton">
-                    <button onClick={this.deleteRow}>Delete</button>
+                    <button className="button is-danger" onClick={this.deleteRow}>
+                        Delete
+                    </button>
                 </td>
             );
         }
